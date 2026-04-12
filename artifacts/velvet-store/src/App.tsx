@@ -36,6 +36,14 @@ import AdminSettingsPage from "@/pages/admin/AdminSettingsPage";
 import AdminTestimonialsPage from "@/pages/admin/AdminTestimonialsPage";
 import AdminFaqsPage from "@/pages/admin/AdminFaqsPage";
 
+function ScrollToTop() {
+  const [location] = useLocation();
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+  }, [location]);
+  return null;
+}
+
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -84,7 +92,9 @@ function AdminGuard({ children }: { children: React.ReactNode }) {
 
 function Router() {
   return (
-    <Switch>
+    <>
+      <ScrollToTop />
+      <Switch>
       {/* Admin routes */}
       <Route path="/admin/login" component={AdminLoginPage} />
       <Route path="/admin">
@@ -152,7 +162,8 @@ function Router() {
       <Route>
         <StorefrontLayout><NotFound /></StorefrontLayout>
       </Route>
-    </Switch>
+      </Switch>
+    </>
   );
 }
 

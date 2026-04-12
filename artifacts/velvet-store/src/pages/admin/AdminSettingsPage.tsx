@@ -1,11 +1,9 @@
 import { useState, useEffect } from "react";
 import { useGetSettings, useUpdateSettings, useGetShippingSettings, useUpdateShippingSettings, useGetAgeGateSettings, useUpdateAgeGateSettings } from "@workspace/api-client-react";
-import { useAuth } from "@/hooks/useAuth";
+
 import { Save } from "lucide-react";
 
 export default function AdminSettingsPage() {
-  const { token } = useAuth();
-  const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
 
   const { data: siteSettings } = useGetSettings();
   const { data: shippingSettings } = useGetShippingSettings();
@@ -26,9 +24,9 @@ export default function AdminSettingsPage() {
 
   const saveSection = async (section: string) => {
     try {
-      if (section === "site") await updateSite.mutateAsync({ data: site, request: { headers } } as any);
-      if (section === "shipping") await updateShipping.mutateAsync({ data: shipping, request: { headers } } as any);
-      if (section === "agegate") await updateAgeGate.mutateAsync({ data: ageGate, request: { headers } } as any);
+      if (section === "site") await updateSite.mutateAsync({ data: site});
+      if (section === "shipping") await updateShipping.mutateAsync({ data: shipping});
+      if (section === "agegate") await updateAgeGate.mutateAsync({ data: ageGate});
       setSaved(section);
       setTimeout(() => setSaved(null), 2000);
     } catch { alert("Failed to save settings"); }

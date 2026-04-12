@@ -1,13 +1,11 @@
 import { useListCustomers } from "@workspace/api-client-react";
-import { useAuth } from "@/hooks/useAuth";
+
 import { formatKES } from "@/lib/utils";
 import { useState } from "react";
 
 export default function AdminCustomersPage() {
-  const { token } = useAuth();
-  const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
   const [page, setPage] = useState(1);
-  const { data } = useListCustomers({ params: { page, limit: 20 }, request: { headers } } as any);
+  const { data } = useListCustomers({ params: { page, limit: 20 }});
   const customers = data?.customers || [];
   const totalPages = data?.totalPages || 1;
 

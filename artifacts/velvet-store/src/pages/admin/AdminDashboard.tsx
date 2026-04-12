@@ -1,6 +1,5 @@
 import { TrendingUp, ShoppingCart, Package, Users, ArrowUpRight, DollarSign } from "lucide-react";
 import { useGetDashboardStats, useListOrders } from "@workspace/api-client-react";
-import { useAuth } from "@/hooks/useAuth";
 import { formatKES } from "@/lib/utils";
 import { Link } from "wouter";
 
@@ -14,9 +13,8 @@ const statusColors: Record<string, { bg: string; text: string }> = {
 };
 
 export default function AdminDashboard() {
-  const { token } = useAuth();
-  const { data: stats } = useGetDashboardStats({ request: { headers: token ? { Authorization: `Bearer ${token}` } : undefined } } as any);
-  const { data: ordersData } = useListOrders({ params: { limit: 5 }, request: { headers: token ? { Authorization: `Bearer ${token}` } : undefined } } as any);
+  const { data: stats } = useGetDashboardStats();
+  const { data: ordersData } = useListOrders({ params: { limit: 5 } });
 
   const recentOrders = ordersData?.orders || [];
 
@@ -31,11 +29,11 @@ export default function AdminDashboard() {
     <div>
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="font-display text-3xl font-semibold" style={{ color: "#E7D9C8" }}>Dashboard</h1>
-          <p className="font-sans text-sm mt-1" style={{ color: "#A1A1AA" }}>Welcome back! Here's what's happening.</p>
+          <h1 className="text-3xl font-semibold" style={{ color: "#E7D9C8" }}>Dashboard</h1>
+          <p className="text-sm mt-1" style={{ color: "#A1A1AA" }}>Welcome back! Here's what's happening.</p>
         </div>
-        <Link href="/" target="_blank">
-          <button className="px-4 py-2 rounded-xl font-sans text-sm flex items-center gap-2 hover:bg-white/5 transition-colors" style={{ color: "#A1A1AA", border: "1px solid rgba(255,255,255,0.1)" }}>
+        <Link href="/">
+          <button className="px-4 py-2 rounded-xl text-sm flex items-center gap-2 hover:bg-white/5 transition-colors" style={{ color: "#A1A1AA", border: "1px solid rgba(255,255,255,0.1)" }}>
             View Store <ArrowUpRight size={14} />
           </button>
         </Link>
@@ -49,24 +47,23 @@ export default function AdminDashboard() {
                 {card.icon}
               </div>
               {card.change && (
-                <span className="font-sans text-xs flex items-center gap-1" style={{ color: "#22C55E" }}>
+                <span className="text-xs flex items-center gap-1" style={{ color: "#22C55E" }}>
                   <TrendingUp size={12} />{card.change}
                 </span>
               )}
             </div>
-            <p className="font-display text-2xl font-semibold" style={{ color: "#E7D9C8" }}>{card.value}</p>
-            <p className="font-sans text-xs mt-1" style={{ color: "#A1A1AA" }}>{card.title}</p>
+            <p className="text-2xl font-semibold" style={{ color: "#E7D9C8" }}>{card.value}</p>
+            <p className="text-xs mt-1" style={{ color: "#A1A1AA" }}>{card.title}</p>
           </div>
         ))}
       </div>
 
-      {/* Quick stats */}
       {stats?.ordersByStatus && (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-8">
           {Object.entries(stats.ordersByStatus as Record<string, number>).map(([status, count]) => (
             <div key={status} className="p-4 rounded-xl text-center" style={{ background: "#14141A", border: "1px solid rgba(255,255,255,0.06)" }}>
-              <p className="font-display text-xl font-semibold" style={{ color: "#E7D9C8" }}>{count}</p>
-              <div className="inline-block mt-1 px-2 py-0.5 rounded-full font-sans text-xs capitalize" style={{ background: statusColors[status]?.bg || "rgba(255,255,255,0.1)", color: statusColors[status]?.text || "#A1A1AA" }}>
+              <p className="text-xl font-semibold" style={{ color: "#E7D9C8" }}>{count}</p>
+              <div className="inline-block mt-1 px-2 py-0.5 rounded-full text-xs capitalize" style={{ background: statusColors[status]?.bg || "rgba(255,255,255,0.1)", color: statusColors[status]?.text || "#A1A1AA" }}>
                 {status}
               </div>
             </div>
@@ -74,12 +71,11 @@ export default function AdminDashboard() {
         </div>
       )}
 
-      {/* Recent Orders */}
       <div className="rounded-2xl" style={{ background: "#14141A", border: "1px solid rgba(255,255,255,0.06)" }}>
         <div className="flex items-center justify-between p-6 border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
-          <h2 className="font-display text-xl font-semibold" style={{ color: "#E7D9C8" }}>Recent Orders</h2>
+          <h2 className="text-xl font-semibold" style={{ color: "#E7D9C8" }}>Recent Orders</h2>
           <Link href="/admin/orders">
-            <button className="font-sans text-xs hover:text-white transition-colors" style={{ color: "#C26D85" }}>View All</button>
+            <button className="text-xs hover:text-white transition-colors" style={{ color: "#C26D85" }}>View All</button>
           </Link>
         </div>
         <div className="overflow-x-auto">
@@ -87,24 +83,27 @@ export default function AdminDashboard() {
             <thead>
               <tr className="border-b" style={{ borderColor: "rgba(255,255,255,0.06)" }}>
                 {["Order", "Customer", "Items", "Total", "Status"].map(h => (
-                  <th key={h} className="text-left px-6 py-3 font-sans text-xs uppercase tracking-wider" style={{ color: "#A1A1AA" }}>{h}</th>
+                  <th key={h} className="text-left px-6 py-3 text-xs uppercase tracking-wider" style={{ color: "#A1A1AA" }}>{h}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {recentOrders.map(order => (
                 <tr key={order.id} className="border-b hover:bg-white/2 transition-colors" style={{ borderColor: "rgba(255,255,255,0.04)" }}>
-                  <td className="px-6 py-4 font-sans text-sm font-medium" style={{ color: "#E7D9C8" }}>{order.orderNumber}</td>
-                  <td className="px-6 py-4 font-sans text-sm" style={{ color: "#A1A1AA" }}>{order.isAnonymous ? "Anonymous" : order.customerName || order.customerPhone}</td>
-                  <td className="px-6 py-4 font-sans text-sm" style={{ color: "#A1A1AA" }}>{order.items?.length || 0} item(s)</td>
-                  <td className="px-6 py-4 font-sans text-sm" style={{ color: "#C26D85" }}>{formatKES(order.total)}</td>
+                  <td className="px-6 py-4 text-sm font-medium" style={{ color: "#E7D9C8" }}>{order.orderNumber}</td>
+                  <td className="px-6 py-4 text-sm" style={{ color: "#A1A1AA" }}>{order.isAnonymous ? "Anonymous" : order.customerName || order.customerPhone}</td>
+                  <td className="px-6 py-4 text-sm" style={{ color: "#A1A1AA" }}>{order.items?.length || 0} item(s)</td>
+                  <td className="px-6 py-4 text-sm" style={{ color: "#C26D85" }}>{formatKES(order.total)}</td>
                   <td className="px-6 py-4">
-                    <span className="px-2.5 py-1 rounded-full font-sans text-xs capitalize" style={{ background: statusColors[order.status]?.bg || "rgba(255,255,255,0.1)", color: statusColors[order.status]?.text || "#A1A1AA" }}>
+                    <span className="px-2.5 py-1 rounded-full text-xs capitalize" style={{ background: statusColors[order.status]?.bg || "rgba(255,255,255,0.1)", color: statusColors[order.status]?.text || "#A1A1AA" }}>
                       {order.status}
                     </span>
                   </td>
                 </tr>
               ))}
+              {recentOrders.length === 0 && (
+                <tr><td colSpan={5} className="px-6 py-10 text-center text-sm" style={{ color: "#A1A1AA" }}>No orders yet</td></tr>
+              )}
             </tbody>
           </table>
         </div>

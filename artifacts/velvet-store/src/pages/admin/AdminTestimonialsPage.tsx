@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { Plus, Pencil, Trash2, X, Star } from "lucide-react";
 import { useListTestimonials, useCreateTestimonial, useUpdateTestimonial, useDeleteTestimonial } from "@workspace/api-client-react";
-import { useAuth } from "@/hooks/useAuth";
+
 
 export default function AdminTestimonialsPage() {
-  const { token } = useAuth();
-  const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
   const { data: testimonials = [], refetch } = useListTestimonials();
   const createT = useCreateTestimonial();
   const updateT = useUpdateTestimonial();
@@ -22,9 +20,9 @@ export default function AdminTestimonialsPage() {
     e.preventDefault();
     try {
       if (editId) {
-        await updateT.mutateAsync({ id: editId, data: form, request: { headers } } as any);
+        await updateT.mutateAsync({ id: editId, data: form});
       } else {
-        await createT.mutateAsync({ ...form, request: { headers } } as any);
+        await createT.mutateAsync({ ...form});
       }
       setShowForm(false);
       refetch();
@@ -33,7 +31,7 @@ export default function AdminTestimonialsPage() {
 
   const handleDelete = async (id: number) => {
     if (!confirm("Delete?")) return;
-    await deleteT.mutateAsync({ id, request: { headers } } as any);
+    await deleteT.mutateAsync({ id});
     refetch();
   };
 

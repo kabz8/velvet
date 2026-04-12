@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { Plus, Pencil, Trash2, X } from "lucide-react";
 import { useListCategories, useCreateCategory, useUpdateCategory, useDeleteCategory } from "@workspace/api-client-react";
-import { useAuth } from "@/hooks/useAuth";
+
 
 export default function AdminCategoriesPage() {
-  const { token } = useAuth();
-  const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
   const { data: categories = [], refetch } = useListCategories();
   const createCat = useCreateCategory();
   const updateCat = useUpdateCategory();
@@ -22,7 +20,7 @@ export default function AdminCategoriesPage() {
     e.preventDefault();
     try {
       if (editId) {
-        await updateCat.mutateAsync({ id: editId, data: form, request: { headers } } as any);
+        await updateCat.mutateAsync({ id: editId, data: form});
       } else {
         await createCat.mutateAsync(form);
       }
@@ -33,7 +31,7 @@ export default function AdminCategoriesPage() {
 
   const handleDelete = async (id: number) => {
     if (!confirm("Delete this category?")) return;
-    await deleteCat.mutateAsync({ id, request: { headers } } as any);
+    await deleteCat.mutateAsync({ id});
     refetch();
   };
 

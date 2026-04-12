@@ -21,27 +21,24 @@ const AuthContext = createContext<AuthContextType | null>(null);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AdminUser | null>(null);
   const [token, setToken] = useState<string | null>(() => localStorage.getItem("velvet_admin_token"));
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!!localStorage.getItem("velvet_admin_token"));
 
-  const { data, isError } = useGetAdminMe({
+  const { data, isError, isSuccess } = useGetAdminMe({
     query: {
       enabled: !!token,
       retry: false,
     },
-    request: {
-      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
-    },
-  } as any);
+  });
 
   useEffect(() => {
-    if (data) {
+    if (isSuccess && data) {
       setUser(data as AdminUser);
       setIsLoading(false);
     } else if (isError || !token) {
       setUser(null);
       setIsLoading(false);
     }
-  }, [data, isError, token]);
+  }, [data, isError, isSuccess, token]);
 
   const setAuth = (u: AdminUser, t: string) => {
     setUser(u);

@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Plus, Pencil, Trash2, X, Upload } from "lucide-react";
 import { useListProducts, useCreateProduct, useUpdateProduct, useDeleteProduct, useListCategories, useUploadFile } from "@workspace/api-client-react";
-import { useAuth } from "@/hooks/useAuth";
+
 import { formatKES, getImageUrl } from "@/lib/utils";
 
 const defaultForm = {
@@ -11,8 +11,6 @@ const defaultForm = {
 };
 
 export default function AdminProductsPage() {
-  const { token } = useAuth();
-  const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [showForm, setShowForm] = useState(false);
@@ -66,7 +64,7 @@ export default function AdminProductsPage() {
     const payload = { ...form, newImageUrls: imageFiles };
     try {
       if (editId) {
-        await updateProduct.mutateAsync({ id: editId, data: payload as any, request: { headers } } as any);
+        await updateProduct.mutateAsync({ id: editId, data: payload as any});
       } else {
         await createProduct.mutateAsync({ ...payload } as any);
       }
@@ -79,7 +77,7 @@ export default function AdminProductsPage() {
 
   const handleDelete = async (id: number) => {
     if (!confirm("Delete this product?")) return;
-    await deleteProduct.mutateAsync({ id, request: { headers } } as any);
+    await deleteProduct.mutateAsync({ id});
     refetch();
   };
 

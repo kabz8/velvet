@@ -1,11 +1,9 @@
 import { useState } from "react";
 import { Plus, Pencil, Trash2, X } from "lucide-react";
 import { useListFaqs, useCreateFaq, useUpdateFaq, useDeleteFaq } from "@workspace/api-client-react";
-import { useAuth } from "@/hooks/useAuth";
+
 
 export default function AdminFaqsPage() {
-  const { token } = useAuth();
-  const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
   const { data: faqs = [], refetch } = useListFaqs();
   const createFaq = useCreateFaq();
   const updateFaq = useUpdateFaq();
@@ -22,9 +20,9 @@ export default function AdminFaqsPage() {
     e.preventDefault();
     try {
       if (editId) {
-        await updateFaq.mutateAsync({ id: editId, data: form, request: { headers } } as any);
+        await updateFaq.mutateAsync({ id: editId, data: form});
       } else {
-        await createFaq.mutateAsync({ ...form, request: { headers } } as any);
+        await createFaq.mutateAsync({ ...form});
       }
       setShowForm(false);
       refetch();
@@ -33,7 +31,7 @@ export default function AdminFaqsPage() {
 
   const handleDelete = async (id: number) => {
     if (!confirm("Delete?")) return;
-    await deleteFaq.mutateAsync({ id, request: { headers } } as any);
+    await deleteFaq.mutateAsync({ id});
     refetch();
   };
 

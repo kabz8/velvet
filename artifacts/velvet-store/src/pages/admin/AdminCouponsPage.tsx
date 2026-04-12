@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { Plus, Pencil, Trash2, X } from "lucide-react";
 import { useListCoupons, useCreateCoupon, useUpdateCoupon, useDeleteCoupon } from "@workspace/api-client-react";
-import { useAuth } from "@/hooks/useAuth";
+
 import { formatKES } from "@/lib/utils";
 
 export default function AdminCouponsPage() {
-  const { token } = useAuth();
-  const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
-  const { data: coupons = [], refetch } = useListCoupons({ request: { headers } } as any);
+  const { data: coupons = [], refetch } = useListCoupons(undefined);
   const createCoupon = useCreateCoupon();
   const updateCoupon = useUpdateCoupon();
   const deleteCoupon = useDeleteCoupon();
@@ -24,9 +22,9 @@ export default function AdminCouponsPage() {
     const payload = { ...form, expiresAt: form.expiresAt || undefined };
     try {
       if (editId) {
-        await updateCoupon.mutateAsync({ id: editId, data: payload, request: { headers } } as any);
+        await updateCoupon.mutateAsync({ id: editId, data: payload});
       } else {
-        await createCoupon.mutateAsync({ ...payload, request: { headers } } as any);
+        await createCoupon.mutateAsync({ ...payload});
       }
       setShowForm(false);
       refetch();
@@ -35,7 +33,7 @@ export default function AdminCouponsPage() {
 
   const handleDelete = async (id: number) => {
     if (!confirm("Delete this coupon?")) return;
-    await deleteCoupon.mutateAsync({ id, request: { headers } } as any);
+    await deleteCoupon.mutateAsync({ id});
     refetch();
   };
 

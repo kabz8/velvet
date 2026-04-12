@@ -1,12 +1,10 @@
 import { useState } from "react";
 import { Plus, Pencil, Trash2, X } from "lucide-react";
 import { useListBanners, useCreateBanner, useUpdateBanner, useDeleteBanner } from "@workspace/api-client-react";
-import { useAuth } from "@/hooks/useAuth";
+
 import { getImageUrl } from "@/lib/utils";
 
 export default function AdminBannersPage() {
-  const { token } = useAuth();
-  const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
   const { data: banners = [], refetch } = useListBanners({ params: {} });
   const createBanner = useCreateBanner();
   const updateBanner = useUpdateBanner();
@@ -23,9 +21,9 @@ export default function AdminBannersPage() {
     e.preventDefault();
     try {
       if (editId) {
-        await updateBanner.mutateAsync({ id: editId, data: form, request: { headers } } as any);
+        await updateBanner.mutateAsync({ id: editId, data: form});
       } else {
-        await createBanner.mutateAsync({ ...form, request: { headers } } as any);
+        await createBanner.mutateAsync({ ...form});
       }
       setShowForm(false);
       refetch();
@@ -34,7 +32,7 @@ export default function AdminBannersPage() {
 
   const handleDelete = async (id: number) => {
     if (!confirm("Delete this banner?")) return;
-    await deleteBanner.mutateAsync({ id, request: { headers } } as any);
+    await deleteBanner.mutateAsync({ id});
     refetch();
   };
 
